@@ -4,8 +4,7 @@
 function tokenize(code) {
   const tokenSpec = [
     ['WHITESPACE', /^\s+/],
-    ['COMMENT', /^\/\/[^
-]*/],
+    ['COMMENT', /^\/\/[^\n]*/],
     ['MULTILINE_COMMENT', /^\/\*[\s\S]*?\*\//],
     ['NUMBER', /^\d+(\.\d+)?/],
     ['STRING', /^"([^"\\]|\\.)*"/],

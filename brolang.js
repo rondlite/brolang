@@ -260,6 +260,4 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = { interpretBroLang, tokenize, parse, evaluate, execute };
 }
 
-// Event listener for the Run button
-document.getElementById('runButton').addEventListener('click', interpretBroLang);
 

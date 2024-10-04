@@ -8,6 +8,7 @@ function tokenize(code) {
     ['MULTILINE_COMMENT', /^\/\*[\s\S]*?\*\//],
     ['NUMBER', /^\d+(\.\d+)?/],
     ['STRING', /^"([^"\\]|\\.)*"/],
+    ['SPILL', /^spill\b/],
     ['STRAIGHTUP', /^straightUp\b/],
     ['NAH', /^nah\b/],
     ['IDENTIFIER', /^[a-zA-Z_]\w*/],
@@ -15,6 +16,11 @@ function tokenize(code) {
     ['PUNCTUATION', /^[;(){}[\],.]/],
     ['LOGICAL', /^&&|\|\||!|and\b|or\b|not\b/],
     ['NEWLINE', /^\n/],
+    ['RETURN', /^return\b/],
+    ['CLASS', /^class\b/],
+    ['EXTENDS', /^extends\b/],
+    ['NEW', /^new\b/],
+    ['FUNCTION', /^func\b/],
   ];
 
   let tokens = [];
@@ -60,9 +66,209 @@ function parse(tokens) {
 
   function parseStatement() {
     const token = tokens[position];
-    // Placeholder logic: Add logic to parse different types of statements here
+    switch (token.type) {
+      case 'SPILL':
+        position++;
+        const argument = parseExpression();
+        return { type: 'SpillStatement', argument };
+      case 'STRAIGHTUP':
+      case 'NAH':
+        return parseVariableDeclaration();
+      case 'FUNCTION':
+        return parseFunctionDeclaration();
+      case 'CLASS':
+        return parseClassDeclaration();
+      case 'RETURN':
+        return parseReturnStatement();
+      case 'IDENTIFIER':
+        if (tokens[position + 1] && tokens[position + 1].value === '(') {
+          return parseFunctionCall();
+        } else {
+          return parseExpressionStatement();
+        }
+      case 'PUNCTUATION':
+        if (token.value === '{') {
+          position++;
+          return parseBlockStatement();
+        }
+      case 'OPERATOR':
+        if (token.value === 'if') {
+          return parseIfStatement();
+        } else if (token.value === 'while') {
+          return parseWhileStatement();
+        } else if (token.value === 'for') {
+          return parseForStatement();
+        }
+      case 'NEW':
+        return parseNewExpression();
+      default:
+        return parseExpressionStatement();
+    }
+  }
+
+  function parseVariableDeclaration() {
+    const token = tokens[position];
     position++;
-    return { type: 'ExpressionStatement', expression: { type: 'Literal', value: token.value } };
+    const identifier = tokens[position];
+    position++;
+    if (identifier.type !== 'IDENTIFIER') {
+      throw new Error(`Expected identifier at line ${token.line}`);
+    }
+    let init = null;
+    if (tokens[position] && tokens[position].type === 'OPERATOR' && tokens[position].value === '=') {
+      position++;
+      init = parseExpression();
+    }
+    return {
+      type: 'VariableDeclaration',
+      identifier: identifier.value,
+      constant: token.type === 'STRAIGHTUP',
+      init,
+    };
+  }
+
+  function parseBlockStatement() {
+    const body = [];
+    while (position < tokens.length && tokens[position].value !== '}') {
+      body.push(parseStatement());
+    }
+    if (tokens[position].value !== '}') {
+      throw new Error(`Expected '}' at line ${tokens[position - 1].line}`);
+    }
+    position++;
+    return { type: 'BlockStatement', body };
+  }
+
+  function parseIfStatement() {
+    position++; // Skip 'if'
+    const test = parseExpression();
+    const consequent = parseBlockStatement();
+    let alternate = null;
+    if (tokens[position] && tokens[position].value === 'else') {
+      position++;
+      alternate = parseBlockStatement();
+    }
+    return { type: 'IfStatement', test, consequent, alternate };
+  }
+
+  function parseWhileStatement() {
+    position++; // Skip 'while'
+    const test = parseExpression();
+    const body = parseBlockStatement();
+    return { type: 'WhileStatement', test, body };
+  }
+
+  function parseForStatement() {
+    position++; // Skip 'for'
+    const init = parseStatement();
+    const test = parseExpression();
+    position++; // Skip ';'
+    const update = parseExpression();
+    const body = parseBlockStatement();
+    return { type: 'ForStatement', init, test, update, body };
+  }
+
+  function parseFunctionCall() {
+    const nameToken = tokens[position];
+    position += 2; // Skip name and '('
+    const args = [];
+    while (tokens[position] && tokens[position].value !== ')') {
+      args.push(parseExpression());
+      if (tokens[position] && tokens[position].value === ',') {
+        position++;
+      }
+    }
+    if (tokens[position].value !== ')') {
+      throw new Error(`Expected ')' at line ${tokens[position - 1].line}`);
+    }
+    position++; // Skip ')'
+    return { type: 'CallExpression', callee: { type: 'Identifier', name: nameToken.value }, arguments: args };
+  }
+
+  function parseFunctionDeclaration() {
+    position++; // Skip 'func'
+    const nameToken = tokens[position];
+    position++;
+    if (nameToken.type !== 'IDENTIFIER') {
+      throw new Error(`Expected function name at line ${nameToken.line}`);
+    }
+    position++; // Skip '('
+    const params = [];
+    while (tokens[position] && tokens[position].value !== ')') {
+      params.push(tokens[position].value);
+      position++;
+      if (tokens[position] && tokens[position].value === ',') {
+        position++;
+      }
+    }
+    if (tokens[position].value !== ')') {
+      throw new Error(`Expected ')' at line ${tokens[position - 1].line}`);
+    }
+    position++; // Skip ')'
+    const body = parseBlockStatement();
+    return { type: 'FunctionDeclaration', name: nameToken.value, params, body };
+  }
+
+  function parseClassDeclaration() {
+    position++; // Skip 'class'
+    const nameToken = tokens[position];
+    position++;
+    if (nameToken.type !== 'IDENTIFIER') {
+      throw new Error(`Expected class name at line ${nameToken.line}`);
+    }
+    let superClass = null;
+    if (tokens[position] && tokens[position].type === 'EXTENDS') {
+      position++; // Skip 'extends'
+      superClass = tokens[position].value;
+      position++;
+    }
+    const body = parseBlockStatement();
+    return { type: 'ClassDeclaration', name: nameToken.value, superClass, body };
+  }
+
+  function parseReturnStatement() {
+    position++; // Skip 'return'
+    const argument = parseExpression();
+    return { type: 'ReturnStatement', argument };
+  }
+
+  function parseNewExpression() {
+    position++; // Skip 'new'
+    const className = tokens[position];
+    position++;
+    if (className.type !== 'IDENTIFIER') {
+      throw new Error(`Expected class name at line ${className.line}`);
+    }
+    position++; // Skip '('
+    const args = [];
+    while (tokens[position] && tokens[position].value !== ')') {
+      args.push(parseExpression());
+      if (tokens[position] && tokens[position].value === ',') {
+        position++;
+      }
+    }
+    if (tokens[position].value !== ')') {
+      throw new Error(`Expected ')' at line ${tokens[position - 1].line}`);
+    }
+    position++; // Skip ')'
+    return { type: 'NewExpression', callee: { type: 'Identifier', name: className.value }, arguments: args };
+  }
+
+  function parseExpressionStatement() {
+    const expression = parseExpression();
+    return { type: 'ExpressionStatement', expression };
+  }
+
+  function parseExpression() {
+    const token = tokens[position];
+    position++;
+    if (token.type === 'NUMBER' || token.type === 'STRING') {
+      return { type: 'Literal', value: token.value };
+    } else if (token.type === 'IDENTIFIER') {
+      return { type: 'Identifier', name: token.value };
+    } else {
+      throw new Error(`Unexpected token ${token.value} at line ${token.line}`);
+    }
   }
 
   return parseProgram();
@@ -129,8 +335,17 @@ function execute(node, context) {
       }
       break;
 
+    case 'SpillStatement':
+      const printValue = evaluate(node.argument, context);
+      context.output += String(printValue) + '\n';
+      break;
+
+    case 'ExpressionStatement':
+      evaluate(node.expression, context);
+      break;
+
     case 'VariableDeclaration':
-      const varValue = evaluate(node.init, context);
+      const varValue = node.init ? evaluate(node.init, context) : undefined;
       if (node.constant) {
         Object.defineProperty(context.variables, node.identifier, {
           value: varValue,
@@ -141,14 +356,16 @@ function execute(node, context) {
       }
       break;
 
-    case 'PrintStatement':
-      const printValue = evaluate(node.argument, context);
-      context.output += String(printValue) + '\n';
+    case 'FunctionDeclaration':
+      context.functions[node.name] = node;
       break;
 
-    case 'ExpressionStatement':
-      evaluate(node.expression, context);
+    case 'ClassDeclaration':
+      context.classes[node.name] = node;
       break;
+
+    case 'ReturnStatement':
+      return { type: 'ReturnStatement', value: evaluate(node.argument, context) };
 
     case 'IfStatement':
       const testResult = evaluate(node.test, context);
@@ -193,30 +410,6 @@ function execute(node, context) {
       }
       break;
 
-    case 'FunctionDeclaration':
-      context.functions[node.name] = node;
-      break;
-
-    case 'ReturnStatement':
-      return { type: 'ReturnStatement', value: evaluate(node.argument, context) };
-
-    case 'BreakStatement':
-      return { type: 'BreakStatement' };
-
-    case 'ContinueStatement':
-      return { type: 'ContinueStatement' };
-
-    case 'ClassDeclaration':
-      context.classes[node.name] = node;
-      break;
-
-    case 'MemberExpression':
-      const obj = evaluate(node.object, context);
-      if (!obj || !obj.variables) {
-        throw new Error(`Cannot access property '${node.property}' of undefined`);
-      }
-      return obj.variables[node.property];
-
     case 'CallExpression':
       const func = context.functions[node.callee.name];
       if (!func) {
@@ -224,6 +417,50 @@ function execute(node, context) {
       }
       const args = node.arguments.map(arg => evaluate(arg, context));
       return executeFunction(func, args, context);
+
+    case 'NewExpression':
+      const classNode = context.classes[node.callee.name];
+      if (!classNode) {
+        throw new Error(`Undefined class '${node.callee.name}'`);
+      }
+      const obj = {
+        variables: {},
+        methods: {},
+      };
+      // Inherit from superclass if any
+      if (classNode.superClass) {
+        const superClassNode = context.classes[classNode.superClass];
+        if (!superClassNode) {
+          throw new Error(`Undefined superclass '${classNode.superClass}'`);
+        }
+        const superObj = evaluateClass(superClassNode, context);
+        Object.setPrototypeOf(obj.variables, superObj.variables);
+        Object.setPrototypeOf(obj.methods, superObj.methods);
+      }
+      // Define methods
+      classNode.body.forEach(member => {
+        if (member.type === 'MethodDefinition') {
+          obj.methods[member.name] = member;
+        }
+      });
+      // Call 'init' method if exists
+      const initMethod = obj.methods['init'];
+      if (initMethod) {
+        const args = node.arguments.map(arg => evaluate(arg, context));
+        const methodContext = {
+          variables: { ...context.variables },
+          functions: context.functions,
+          classes: context.classes,
+          output: context.output,
+          thisValue: obj,
+        };
+        initMethod.params.forEach((param, index) => {
+          methodContext.variables[param] = args[index];
+        });
+        executeBlock(initMethod.body, methodContext);
+        context.output = methodContext.output;
+      }
+      return obj;
 
     default:
       throw new Error(`Unknown node type ${node.type}`);
@@ -351,123 +588,4 @@ function evaluate(node, context) {
         case 'not':
           return !arg;
         default:
-          throw new Error(`Unsupported unary operator '${node.operator}'`);
-      }
-
-    case 'CallExpression':
-      if (node.callee.type === 'MemberExpression') {
-        const obj = evaluate(node.callee.object, context);
-        const methodName = node.callee.property;
-        const method = obj.methods[methodName];
-        if (!method) {
-          throw new Error(`Undefined method '${methodName}'`);
-        }
-        const args = node.arguments.map(arg => evaluate(arg, context));
-        const methodContext = {
-          variables: { ...context.variables },
-          functions: context.functions,
-          classes: context.classes,
-          output: context.output,
-          thisValue: obj,
-        };
-        method.params.forEach((param, index) => {
-          methodContext.variables[param] = args[index];
-        });
-        const result = executeBlock(method.body, methodContext);
-        context.output = methodContext.output;
-        if (result && result.type === 'ReturnStatement') {
-          return result.value;
-        }
-        return undefined;
-      } else {
-        const func = context.functions[node.callee.name];
-        if (!func) {
-          throw new Error(`Undefined function '${node.callee.name}'`);
-        }
-        const args = node.arguments.map(arg => evaluate(arg, context));
-        return executeFunction(func, args, context);
-      }
-
-    case 'NewExpression':
-      const classNode = context.classes[node.callee.name];
-      if (!classNode) {
-        throw new Error(`Undefined class '${node.callee.name}'`);
-      }
-      const obj = {
-        variables: {},
-        methods: {},
-      };
-      // Inherit from superclass if any
-      if (classNode.superClass) {
-        const superClassNode = context.classes[classNode.superClass];
-        if (!superClassNode) {
-          throw new Error(`Undefined superclass '${classNode.superClass}'`);
-        }
-        const superObj = evaluateClass(superClassNode, context);
-        Object.setPrototypeOf(obj.variables, superObj.variables);
-        Object.setPrototypeOf(obj.methods, superObj.methods);
-      }
-      // Define methods
-      classNode.body.forEach(member => {
-        if (member.type === 'MethodDefinition') {
-          obj.methods[member.name] = member;
-        }
-      });
-      // Call 'init' method if exists
-      const initMethod = obj.methods['init'];
-      if (initMethod) {
-        const args = node.arguments.map(arg => evaluate(arg, context));
-        const methodContext = {
-          variables: { ...context.variables },
-          functions: context.functions,
-          classes: context.classes,
-          output: context.output,
-          thisValue: obj,
-        };
-        initMethod.params.forEach((param, index) => {
-          methodContext.variables[param] = args[index];
-        });
-        executeBlock(initMethod.body, methodContext);
-        context.output = methodContext.output;
-      }
-      return obj;
-
-    case 'MemberExpression':
-      const object = evaluate(node.object, context);
-      const property = node.property;
-      if (object.variables && property in object.variables) {
-        return object.variables[property];
-      } else if (object.methods && property in object.methods) {
-        return { type: 'Method', object: object, method: object.methods[property] };
-      } else {
-        throw new Error(`Property '${property}' does not exist`);
-      }
-
-    default:
-      throw new Error(`Unknown node type ${node.type}`);
-  }
-}
-
-function evaluateClass(classNode, context) {
-  const obj = {
-    variables: {},
-    methods: {},
-  };
-  // Inherit from superclass if any
-  if (classNode.superClass) {
-    const superClassNode = context.classes[classNode.superClass];
-    if (!superClassNode) {
-      throw new Error(`Undefined superclass '${classNode.superClass}'`);
-    }
-    const superObj = evaluateClass(superClassNode, context);
-    Object.setPrototypeOf(obj.variables, superObj.variables);
-    Object.setPrototypeOf(obj.methods, superObj.methods);
-  }
-  // Define methods
-  classNode.body.forEach(member => {
-    if (member.type === 'MethodDefinition') {
-      obj.methods[member.name] = member;
-    }
-  });
-  return obj;
-}
+          throw new Error(`

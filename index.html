@@ -24,13 +24,47 @@
       font-size: 16px;
       margin-top: 10px;
     }
+      .editor-container {
+      display: flex;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .line-numbers {
+      padding: 8px;
+      background-color: #f5f5f5;
+      border-right: 1px solid #ccc;
+      text-align: right;
+      color: #666;
+      user-select: none;
+    }
+    
+    .line-numbers span {
+      display: block;
+      line-height: 20px;
+    }
+    
+    .editor {
+      flex-grow: 1;
+      padding: 8px;
+      line-height: 20px;
+      border: none;
+      outline: none;
+      resize: none;
+      min-height: 100px;
+    }
   </style>
 </head>
 <body>
 
   <h1>BroLang Interpreter</h1>
-
-  <textarea id="codeInput" placeholder="Enter your BroLang code here..."></textarea>
+  <div class="editor-container">
+  <div class="line-numbers" id="lineNumbers"></div>
+  <textarea class="editor" id="codeInput" placeholder="Enter your BroLang code here..."></textarea>
+  </div>
   <button id="runButton">Run</button>
   <h2>Output:</h2>
   <textarea id="output" readonly></textarea>

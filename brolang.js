@@ -1,4 +1,4 @@
-// brolang.js
+// interpreter.js
 
 // Function to run the BroLang code
 function runBroLang() {

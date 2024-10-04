@@ -4,7 +4,8 @@
 function tokenize(code) {
   const tokenSpec = [
     ['WHITESPACE', /^\s+/],
-    ['COMMENT', /^\/\/[^\n]*/],
+    ['COMMENT', /^\/\/[^
+]*/],
     ['MULTILINE_COMMENT', /^\/\*[\s\S]*?\*\//],
     ['NUMBER', /^\d+(\.\d+)?/],
     ['STRING', /^"([^"\\]|\\.)*"/],
@@ -44,6 +45,28 @@ function tokenize(code) {
   }
 
   return tokens;
+}
+
+// Parser function
+function parse(tokens) {
+  let position = 0;
+
+  function parseProgram() {
+    const statements = [];
+    while (position < tokens.length) {
+      statements.push(parseStatement());
+    }
+    return { type: 'Program', body: statements };
+  }
+
+  function parseStatement() {
+    const token = tokens[position];
+    // Placeholder logic: Add logic to parse different types of statements here
+    position++;
+    return { type: 'ExpressionStatement', expression: { type: 'Literal', value: token.value } };
+  }
+
+  return parseProgram();
 }
 
 // Function to run the BroLang code
@@ -94,9 +117,6 @@ function runBroLang() {
 
 // Event listener for the Run button
 document.getElementById('runButton').addEventListener('click', runBroLang);
-
-// Parser function
-// ... (No changes to parser)
 
 // Executor function
 function execute(node, context) {

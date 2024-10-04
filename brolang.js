@@ -1,4 +1,4 @@
-// interpreter.js
+// brolang.js - a stupid language written by Ron van Etten
 
 // Function to run the BroLang code
 function runBroLang() {

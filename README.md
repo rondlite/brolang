@@ -38,8 +38,8 @@ BroLang is a high-level programming language that infuses bro slang and street l
   yo greeting = "What's up, bro?";   // Vibes
   ```
 - **Flex**: Represents boolean values.
-  - `straightUp` for `true`.
-  - `nah` for `false`.
+  - `dope` for `true`.
+  - `nope` for `false`.
   ```brolang
   yo isChill = straightUp;   // Flex
   ```

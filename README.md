@@ -29,9 +29,9 @@ BroLang is a high-level programming language that infuses bro slang and street l
   ```brolang
   yo age = 25;            // Chill
   ```
-- **Dope**: Represents floating-point numbers.
+- **Fluid**: Represents floating-point numbers.
   ```brolang
-  yo piApprox = 3.14;     // Dope
+  yo piApprox = 3.14;     // fluid
   ```
 - **Vibes**: Represents strings of text.
   ```brolang
@@ -57,11 +57,11 @@ BroLang is a high-level programming language that infuses bro slang and street l
   yo gains = 100;            // Chill
   yo mood = "lit";           // Vibes
   yo isSwole = straightUp;   // Flex
-  yo score = 99.5;           // Dope
+  yo score = 99.5;           // Fluid
   ```
 - **Constant Declaration**: Use `nocap` before `yo` to declare a constant that cannot be changed.
   ```brolang
-  nocap yo pi = 3.14159;     // Dope constant
+  nocap yo pi = 3.14159;     // Fluid constant
   nocap yo maxLevel = 99;    // Chill constant
   ```
   *Attempting to modify a constant will result in an error.*

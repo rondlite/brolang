@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BroLang Interpreter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #codeInput, #output {
+      width: 100%;
+      height: 300px;
+      font-family: monospace;
+      font-size: 14px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    #output {
+      background-color: #f0f0f0;
+    }
+    #runButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>BroLang Interpreter</h1>
+
+  <textarea id="codeInput" placeholder="Enter your BroLang code here..."></textarea>
+  <button id="runButton">Run</button>
+  <h2>Output:</h2>
+  <textarea id="output" readonly></textarea>
+
+  <script src="brolang.js"></script>
+</body>
+</html>

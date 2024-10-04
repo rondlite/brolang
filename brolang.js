@@ -1,5 +1,52 @@
 // interpreter.js
 
+// Tokenizer function
+function tokenize(code) {
+  const tokenSpec = [
+    ['WHITESPACE', /^\s+/],
+    ['COMMENT', /^\/\/[^
+]*/],
+    ['MULTILINE_COMMENT', /^\/\*[\s\S]*?\*\//],
+    ['NUMBER', /^\d+(\.\d+)?/],
+    ['STRING', /^"([^"\\]|\\.)*"/],
+    ['STRAIGHTUP', /^straightUp\b/],
+    ['NAH', /^nah\b/],
+    ['IDENTIFIER', /^[a-zA-Z_]\w*/],
+    ['OPERATOR', /^==|!=|<=|>=|\+{1,2}|-{1,2}|\*|\/|%|=/],
+    ['PUNCTUATION', /^[;(){}[\],.]/],
+    ['LOGICAL', /^&&|\|\||!|and\b|or\b|not\b/],
+    ['NEWLINE', /^\n/],
+  ];
+
+  let tokens = [];
+  let line = 1;
+
+  while (code.length > 0) {
+    let matched = false;
+
+    for (let [type, regex] of tokenSpec) {
+      const match = code.match(regex);
+      if (match) {
+        matched = true;
+        const value = match[0];
+        if (type === 'NEWLINE') {
+          line++;
+        } else if (type !== 'WHITESPACE' && type !== 'COMMENT' && type !== 'MULTILINE_COMMENT') {
+          tokens.push({ type, value, line });
+        }
+        code = code.slice(value.length);
+        break;
+      }
+    }
+
+    if (!matched) {
+      throw new Error(`Unrecognized token at line ${line}`);
+    }
+  }
+
+  return tokens;
+}
+
 // Function to run the BroLang code
 function runBroLang() {
   const code = document.getElementById('codeInput').value;
@@ -41,16 +88,13 @@ function runBroLang() {
       outputArea.value = context.output;
     }
   } catch (error) {
-    outputArea.value = 'Error: ' + error.message;
+    outputArea.value = 'Error at line ' + (error.line || '?') + ': ' + error.message;
     console.error(error);
   }
 }
 
 // Event listener for the Run button
 document.getElementById('runButton').addEventListener('click', runBroLang);
-
-// Tokenizer function
-// ... (No changes to tokenizer)
 
 // Parser function
 // ... (No changes to parser)

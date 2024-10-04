@@ -1,4 +1,4 @@
-  const editor = document.getElementById('editor');
+  const editor = document.getElementById('codeInput');
     const lineNumbers = document.getElementById('lineNumbers');
 
     function updateLineNumbers() {

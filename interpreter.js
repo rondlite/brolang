@@ -57,7 +57,8 @@ export class Interpreter {
   _executePrintStatement(node) {
     const value = this._evaluate(node.value.expression);
     const currentID = document.getElementById("editorOutput");
-    currentID.innerHTML = value;
+    const currentHTML = currentID.innerHTML;
+    currentID.innerHTML = currentHTML + value;
     console.log(value);
   }
 

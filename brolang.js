@@ -1,4 +1,4 @@
-import { Lexer } from "./lexer";
+import { Lexer } from "./lexer.js";
 import { Parser } from "./ast.js";
 import { SemanticAnalyzer } from "./analyzer.js";
 import { Interpreter } from "./interpreter.js";

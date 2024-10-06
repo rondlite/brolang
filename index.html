@@ -23,14 +23,16 @@
     <div id="editorInput">yo a = 5; spill a;</div>
     <div id="editorOutput"></div>
     <button id="runButton">Run Code</button>
+    <script>
+      const editorInput = ace.edit("editorInput", {
+        mode: "ace/mode/brolang",
+        theme: "ace/theme/monokai"
+      });
+    </script>
     <script type="module">
       import { interpretBroLang } from "./brolang.js";
-      document.addEventListener("DOMContentLoaded", () => {
-        const editorInput = ace.edit("editorInput", {
-          mode: "ace/mode/brolang",
-          theme: "ace/theme/monokai"
-        });
 
+      document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("runButton").onclick = function () {
           const code = editorInput.getValue();
           try {

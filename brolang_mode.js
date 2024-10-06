@@ -23,6 +23,10 @@ ace.define(
               "\\b(?:yo|brofunc|bounce|spill|if|else|forEvery|squadGoals)\\b"
           },
           {
+            token: "constant.language.boolean",
+            regex: /(?:dope|nope)\b/
+          },
+          {
             token: "constant.numeric",
             regex: "\\b\\d+\\b"
           },

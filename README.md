@@ -41,7 +41,7 @@ BroLang is a high-level programming language that infuses bro slang and street l
   - `dope` for `true`.
   - `nope` for `false`.
   ```brolang
-  yo isChill = straightUp;   // Flex
+  yo isChill = dope;   // Flex
   ```
 - **Squad**: Represents arrays or lists.
   ```brolang
@@ -56,7 +56,7 @@ BroLang is a high-level programming language that infuses bro slang and street l
   ```brolang
   yo gains = 100;            // Chill
   yo mood = "lit";           // Vibes
-  yo isSwole = straightUp;   // Flex
+  yo isSwole = nope;   // Flex
   yo score = 99.5;           // Fluid
   ```
 - **Constant Declaration**: Use `nocap` before `yo` to declare a constant that cannot be changed.

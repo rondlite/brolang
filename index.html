@@ -2,78 +2,44 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>BroLang Interpreter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BroLang Editor</title>
+    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css" />
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      #codeInput,
-      #output {
+      #editorInput,
+      #editorOutput {
         width: 100%;
-        height: 300px;
-        font-family: monospace;
-        font-size: 14px;
-        padding: 10px;
-        box-sizing: border-box;
-      }
-      #output {
-        background-color: #f0f0f0;
-      }
-      #runButton {
-        padding: 10px 20px;
-        font-size: 16px;
-        margin-top: 10px;
-      }
-      .editor-container {
-        display: flex;
-        font-family: monospace;
-        font-size: 14px;
+        height: 200px;
         border: 1px solid #ccc;
-        border-radius: 4px;
-        overflow: hidden;
-      }
-
-      .line-numbers {
-        padding: 8px;
-        background-color: #f5f5f5;
-        border-right: 1px solid #ccc;
-        text-align: right;
-        color: #666;
-        user-select: none;
-      }
-
-      .line-numbers span {
-        display: block;
-        line-height: 20px;
-      }
-
-      .editor {
-        flex-grow: 1;
-        padding: 8px;
-        line-height: 20px;
-        border: none;
-        outline: none;
-        resize: none;
-        min-height: 100px;
+        margin-bottom: 20px;
       }
     </style>
+    <!-- Include Ace Editor from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"></script>
+    <script src="brolang_mode.js"></script>
   </head>
   <body>
-    <h1>BroLang Interpreter</h1>
-    <div class="editor-container">
-      <div class="line-numbers" id="lineNumbers"></div>
-      <textarea
-        class="editor"
-        id="codeInput"
-        placeholder="Enter your BroLang code here..."
-      ></textarea>
-    </div>
-    <button id="runButton">Run</button>
-    <h2>Output:</h2>
-    <textarea id="output" readonly></textarea>
+    <h1>BroLang Editor</h1>
+    <div id="editorInput">yo a = 5; spill a;</div>
+    <div id="editorOutput"></div>
+    <button id="runButton">Run Code</button>
+    <script type="module">
+      import { interpretBroLang } from "./brolang.js";
+      document.addEventListener("DOMContentLoaded", () => {
+        const editorInput = ace.edit("editorInput", {
+          mode: "ace/mode/brolang",
+          theme: "ace/theme/monokai"
+        });
 
-    <script type="module" src="editor.js"></script>
-    <script type="module" src="brolang.js"></script>
+        document.getElementById("runButton").onclick = function () {
+          const code = editorInput.getValue();
+          try {
+            const output = interpretBroLang(code);
+          } catch (error) {
+            editorOutput.innerHTML = `<div style="color:red;"><b>Error: ${error.message} </b></div>`;
+          }
+        };
+      });
+    </script>
   </body>
 </html>

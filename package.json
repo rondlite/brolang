@@ -1,9 +1,10 @@
 {
-  "scripts":{
-    "build": "parcel build index.html"
+  "scripts": {
+    "start": "parcel index.html --port 39393"
   },
-  "source":"index.html",
+  "source": "index.html",
   "devDependencies": {
+    "@parcel/transformer-js": "^2.12.0",
     "parcel": "^2.12.0"
   }
 }

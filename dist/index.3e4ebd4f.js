@@ -1,27 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BroLang Editor</title>
-    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css">
-    <style>#editorInput, #editorOutput {
-  border: 1px solid #ccc;
-  width: 100%;
-  height: 200px;
-  margin-bottom: 20px;
-}
-</style>
-    <!-- Include Ace Editor from CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"></script>
-    <script src="/index.752a681b.js"></script>
-  </head>
-  <body>
-    <h1>BroLang Editor</h1>
-    <div id="editorInput">yo a = 5; spill a;</div>
-    <div id="editorOutput"></div>
-    <button id="runButton">Run Code</button>
-    <script>// modules are defined as an array
+// modules are defined as an array
 // [ module function, map of requires ]
 //
 // map of requires is short require name -> numeric require
@@ -165,14 +142,14 @@
       this[globalName] = mainExports;
     }
   }
-})({"cWm77":[function(require,module,exports) {
+})({"5GAdG":[function(require,module,exports) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "d6ea1d42532a7575";
 var HMR_USE_SSE = false;
-module.bundle.HMR_BUNDLE_ID = "11b923427ce5d3c0";
+module.bundle.HMR_BUNDLE_ID = "1be433863e4ebd4f";
 "use strict";
 /* global HMR_HOST, HMR_PORT, HMR_ENV_HASH, HMR_SECURE, HMR_USE_SSE, chrome, browser, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
 import type {
@@ -606,24 +583,7 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
     });
 }
 
-},{}],"jHkDm":[function(require,module,exports) {
-var _brolangJs = require("./brolang.js");
-document.addEventListener("DOMContentLoaded", ()=>{
-    const editorInput = ace.edit("editorInput", {
-        mode: "ace/mode/brolang",
-        theme: "ace/theme/monokai"
-    });
-    document.getElementById("runButton").onclick = function() {
-        const code = editorInput.getValue();
-        try {
-            const output = (0, _brolangJs.interpretBroLang)(code);
-        } catch (error) {
-            editorOutput.innerHTML = `<div style="color:red;"><b>Error: ${error.message} </b></div>`;
-        }
-    };
-});
-
-},{"./brolang.js":"dXVTy"}],"dXVTy":[function(require,module,exports) {
+},{}],"dXVTy":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "interpretBroLang", ()=>interpretBroLang);
@@ -835,27 +795,6 @@ class Parser {
                 throw new Error(`Unexpected token: ${token.type}`);
         }
     }
-    _parseIfStatement() {
-        this._consume("KEYWORD", "if"); // Consume 'if'
-        this._consume("LPAREN"); // Consume '('
-        const condition = this._parseExpression(); // Parse the condition expression
-        this._consume("RPAREN"); // Consume ')'
-        const thenBranch = this._parseBlock(); // Parse the 'then' block
-        let elseBranch = null;
-        if (this._match("KEYWORD", "else")) elseBranch = this._parseBlock(); // Parse the 'else' block if present
-        return new ASTNode("IfStatement", {
-            condition: condition,
-            thenBranch: thenBranch,
-            elseBranch: elseBranch
-        });
-    }
-    _parseBlock() {
-        this._consume("LBRACE"); // Consume '{'
-        const statements = [];
-        while(!this._check("RBRACE"))statements.push(this._parseStatement());
-        this._consume("RBRACE"); // Consume '}'
-        return new ASTNode("Block", statements);
-    }
     _parseKeywordStatement() {
         const token = this.tokens[this.position++];
         let statementNode;
@@ -910,6 +849,17 @@ class Parser {
             expression: expressionNode
         });
     }
+    _parseIfStatement() {
+        const condition = this._parseExpression();
+        const thenBranch = this._parseBlock();
+        let elseBranch = null;
+        if (this._match("KEYWORD", "else")) elseBranch = this._parseBlock();
+        return new ASTNode("IfStatement", {
+            condition: condition,
+            thenBranch: thenBranch,
+            elseBranch: elseBranch
+        });
+    }
     _parseForEachLoop() {
         const elementToken = this.tokens[this.position++];
         this._consume("KEYWORD", "in");
@@ -931,30 +881,8 @@ class Parser {
         return new ASTNode("ExpressionStatement", expressionNode);
     }
     _parseExpression() {
-        return this._parseAdditionSubtraction();
-    }
-    _parsePrimary() {
-        const token = this.tokens[this.position];
-        switch(token.type){
-            case "LPAREN":
-                this.position++;
-                const expression = this._parseExpression();
-                this._consume("RPAREN");
-                return expression;
-            case "IDENTIFIER":
-                this.position++;
-                return new ASTNode("Identifier", token.value);
-            case "NUMBER":
-            case "STRING":
-                this.position++;
-                return new ASTNode("Literal", token.value);
-            default:
-                throw new Error(`Unexpected token in expression: ${token.type}`);
-        }
-    }
-    _parseAdditionSubtraction() {
         let left = this._parsePrimary();
-        while(this._match("PLUS") || this._match("MINUS")){
+        while(this._check("PLUS") || this._check("MINUS") || this._check("MULTIPLY") || this._check("DIVIDE") || this._check("MODULO")){
             const operatorToken = this.tokens[this.position++];
             const right = this._parsePrimary();
             left = new ASTNode("BinaryExpression", {
@@ -964,6 +892,18 @@ class Parser {
             });
         }
         return left;
+    }
+    _parsePrimary() {
+        const token = this.tokens[this.position++];
+        switch(token.type){
+            case "IDENTIFIER":
+                return new ASTNode("Identifier", token.value);
+            case "NUMBER":
+            case "STRING":
+                return new ASTNode("Literal", token.value);
+            default:
+                throw new Error(`Unexpected token in expression: ${token.type}`);
+        }
     }
     _parseParameters() {
         const params = [];
@@ -1072,15 +1012,11 @@ class Interpreter {
         }
     }
     _executeVariableDeclaration(node) {
-        const identifier = node.value.identifier;
         const value = this._evaluate(node.value.expression);
-        this.variables[identifier] = value; // Store the variable in the interpreter's variable storage
+        this.variables[node.value.identifier] = value;
     }
     _executePrintStatement(node) {
         const value = this._evaluate(node.value.expression);
-        const currentID = document.getElementById("editorOutput");
-        let currentHTML = currentID.innerHTML;
-        currentID.innerHTML = currentHTML + value;
         console.log(value);
     }
     _executeIfStatement(node) {
@@ -1095,31 +1031,23 @@ class Interpreter {
             this._executeBlock(node.value.body.children);
         }
     }
-    _evaluateIdentifier(node) {
-        const identifier = node.value;
-        if (this.variables.hasOwnProperty(identifier)) return this.variables[identifier];
-        else throw new Error(`Undefined variable: ${identifier}`);
-    }
     _executeFunctionDeclaration(node) {
         // Store function in variables for later invocation
         this.variables[node.value.name] = node;
     }
     _evaluate(node) {
         if (!node) throw new Error("Attempted to evaluate a null or undefined node");
+        console.log("Evaluating node:", node);
         switch(node.type){
             case "Literal":
-                return this._parseLiteral(node.value);
+                return node.value;
             case "BinaryExpression":
                 return this._evaluateBinaryExpression(node);
             case "Identifier":
-                return this._evaluateIdentifier(node);
+                return this.variables[node.value];
             default:
                 throw new Error(`Unknown node type in evaluation: ${node.type}`);
         }
-    }
-    _parseLiteral(value) {
-        if (typeof value === "string" && !isNaN(value) && value.trim() !== "") return Number(value);
-        return value;
     }
     _evaluateBinaryExpression(node) {
         const left = this._evaluate(node.value.left);
@@ -1141,8 +1069,6 @@ class Interpreter {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["cWm77","jHkDm"], "jHkDm", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["5GAdG","dXVTy"], "dXVTy", "parcelRequire94c2")
 
-</script>
-  </body>
-</html>
+//# sourceMappingURL=index.3e4ebd4f.js.map

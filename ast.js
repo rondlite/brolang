@@ -30,6 +30,9 @@ export class Parser {
 
     switch (token.type) {
       case "KEYWORD":
+        if (token.value === "nocap") {
+          return this._parseConstantDeclaration();
+        }
         return this._parseKeywordStatement();
       case "IDENTIFIER":
         return this._parseExpressionStatement();
@@ -38,7 +41,8 @@ export class Parser {
     }
   }
   _parseIfStatement() {
-    this._consume("KEYWORD", "if"); // Consume 'if'
+    this._consume("KEYWORD", "if"); // Consume 'if' keyword
+
     this._consume("LPAREN"); // Consume '('
     const condition = this._parseExpression(); // Parse the condition expression
     this._consume("RPAREN"); // Consume ')'
@@ -46,6 +50,7 @@ export class Parser {
 
     let elseBranch = null;
     if (this._match("KEYWORD", "else")) {
+      this.position++; // Move past 'else'
       elseBranch = this._parseBlock(); // Parse the 'else' block if present
     }
 
@@ -77,6 +82,8 @@ export class Parser {
       case "brofunc":
         statementNode = this._parseFunctionDeclaration();
         break;
+      case "nocap":
+        statementNode = this._parseConstantDeclaration();
       case "spill":
         statementNode = this._parsePrintStatement();
         break;
@@ -171,6 +178,20 @@ export class Parser {
       default:
         throw new Error(`Unexpected token in expression: ${token.type}`);
     }
+  }
+
+  _parseConstantDeclaration() {
+    this._consume("KEYWORD", "nocap");
+    this._consume("KEYWORD", "yo"); // Assuming 'nocap yo' is used for constants
+    const identifierToken = this.tokens[this.position++];
+    this._consume("EQUALS");
+    const expression = this._parseExpression();
+    this._consume("SEMICOLON");
+
+    return new ASTNode("ConstantDeclaration", {
+      identifier: identifierToken.value,
+      expression: expression
+    });
   }
 
   _parseAdditionSubtraction() {

@@ -1,7 +1,9 @@
-5902
-45/mnt/WDmini/Documents/projects/brolang/ast.js1728225239352164447 0
-47/mnt/WDmini/Documents/projects/brolang/lexer.js1728224982808616331 0
-54/mnt/WDmini/Documents/projects/brolang/brolang_mode.js1728226715897575157 0
+5905
+56/mnt/WDmini/Documents/projects/brolang/.github/workflows1728230330931213686 1
+46/mnt/WDmini/Documents/projects/brolang/.github1728230330931213686 1
+45/mnt/WDmini/Documents/projects/brolang/ast.js1728233213026090749 0
+47/mnt/WDmini/Documents/projects/brolang/lexer.js1728230838490314602 0
+54/mnt/WDmini/Documents/projects/brolang/brolang_mode.js1728232177891925602 0
 86/mnt/WDmini/Documents/projects/brolang/node_modules/@mischnic/json-sourcemap/README.md1728179961983407636 0
 90/mnt/WDmini/Documents/projects/brolang/node_modules/@mischnic/json-sourcemap/dist/index.js1728179962867406003 0
 81/mnt/WDmini/Documents/projects/brolang/node_modules/@mischnic/json-sourcemap/dist1728179962983405789 1
@@ -1635,7 +1637,7 @@
 68/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/LICENSE1728179961771408028 0
 97/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/lib/syntax/config/parser-selector.js1728179973883385650 0
 81/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/profiler/package.json1728179963987403934 0
-54/mnt/WDmini/Documents/projects/brolang/dist/index.html1728226372626173778 0
+54/mnt/WDmini/Documents/projects/brolang/dist/index.html1728226716509574088 0
 89/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/cjs/syntax/node/Operator.cjs1728179971787389523 0
 79/mnt/WDmini/Documents/projects/brolang/node_modules/semver/internal/lrucache.js1728179964443403091 0
 75/mnt/WDmini/Documents/projects/brolang/node_modules/domhandler/package.json1728179962815406099 0
@@ -2009,7 +2011,7 @@
 70/mnt/WDmini/Documents/projects/brolang/node_modules/domutils/readme.md1728179964351403261 0
 73/mnt/WDmini/Documents/projects/brolang/node_modules/picomatch/lib/scan.js1728179963219405353 0
 93/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/optimizer-swc/lib/SwcOptimizer.js1728179962175407282 0
-49/mnt/WDmini/Documents/projects/brolang/index.html1728226371790175234 0
+49/mnt/WDmini/Documents/projects/brolang/index.html1728232281843739761 0
 92/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/cjs/syntax/node/Declaration.cjs1728179966479399330 0
 83/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/lib/tokenizer/index.js1728179973615386145 0
 77/mnt/WDmini/Documents/projects/brolang/node_modules/svgo/dist/svgo.browser.js1728179966627399056 0
@@ -2155,7 +2157,7 @@
 100/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/runtime-js/lib/helpers/get-worker-url.js1728179964699402618 0
 73/mnt/WDmini/Documents/projects/brolang/node_modules/detect-libc/README.md1728179962191407252 0
 87/mnt/WDmini/Documents/projects/brolang/node_modules/svgo/plugins/cleanupListOfValues.js1728179968299395967 0
-50/mnt/WDmini/Documents/projects/brolang/analyzer.js1728177039904870706 0
+50/mnt/WDmini/Documents/projects/brolang/analyzer.js1728231776360643543 0
 78/mnt/WDmini/Documents/projects/brolang/node_modules/source-map-js/package.json1728179964427403121 0
 101/mnt/WDmini/Documents/projects/brolang/node_modules/csso/node_modules/css-tree/lib/convertor/index.js1728179973595386182 0
 72/mnt/WDmini/Documents/projects/brolang/node_modules/@swc/helpers/_/index1728179974235385000 1
@@ -2230,7 +2232,7 @@
 106/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/core/test/fixtures/custom-targets/package.json1728179973939385547 0
 89/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/cjs/syntax/config/parser.cjs1728179971887389338 0
 84/mnt/WDmini/Documents/projects/brolang/node_modules/css-select/node_modules/entities1728179967135398118 1
-38/mnt/WDmini/Documents/projects/brolang1728226014758796297 1
+38/mnt/WDmini/Documents/projects/brolang1728230331547212596 1
 87/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/lib/syntax/pseudo/index.js1728179973595386182 0
 79/mnt/WDmini/Documents/projects/brolang/node_modules/csso/cjs/replace/Number.cjs1728179965463401207 0
 76/mnt/WDmini/Documents/projects/brolang/node_modules/domutils/lib/legacy.d.ts1728179964583402833 0
@@ -2251,7 +2253,7 @@
 93/mnt/WDmini/Documents/projects/brolang/node_modules/@swc/helpers/_/_object_without_properties1728179973239386840 1
 107/mnt/WDmini/Documents/projects/brolang/node_modules/css-select/node_modules/domutils/lib/esm/index.d.ts.map1728179965087401902 0
 98/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/features/css-font-stretch.js1728179972907387453 0
-61/mnt/WDmini/Documents/projects/brolang/dist/index.752a681b.js1728226372582173854 0
+61/mnt/WDmini/Documents/projects/brolang/dist/index.752a681b.js1728226716493574116 0
 84/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/core/lib/ParcelConfig.js1728179972751387742 0
 96/mnt/WDmini/Documents/projects/brolang/node_modules/@swc/helpers/_/_read_only_error/package.json1728179973319386692 0
 133/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/optimizer-htmlnano/node_modules/css-tree/lib/syntax/node/ClassSelector.js1728179964723402574 0
@@ -2507,7 +2509,7 @@
 104/mnt/WDmini/Documents/projects/brolang/node_modules/@babel/highlight/node_modules/chalk/types/index.d.ts1728179963319405168 0
 106/mnt/WDmini/Documents/projects/brolang/node_modules/@swc/helpers/_/_class_private_method_init/package.json1728179968487395620 0
 80/mnt/WDmini/Documents/projects/brolang/node_modules/node-addon-api/noexcept.gypi1728179962679406350 0
-65/mnt/WDmini/Documents/projects/brolang/dist/index.752a681b.js.map1728226372626173778 0
+65/mnt/WDmini/Documents/projects/brolang/dist/index.752a681b.js.map1728226716529574054 0
 79/mnt/WDmini/Documents/projects/brolang/node_modules/cosmiconfig/dist/types.d.ts1728179966403399470 0
 88/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/bundler-default/package.json1728179963663404533 0
 66/mnt/WDmini/Documents/projects/brolang/node_modules/svgo/README.md1728179961947407703 0
@@ -2737,7 +2739,7 @@
 79/mnt/WDmini/Documents/projects/brolang/node_modules/cosmiconfig/dist/merge.d.ts1728179966335399596 0
 79/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/events/lib/index.js1728179963307405190 0
 63/mnt/WDmini/Documents/projects/brolang/node_modules/is-arrayish1728179962819406092 1
-43/mnt/WDmini/Documents/projects/brolang/dist1728226372630173771 1
+43/mnt/WDmini/Documents/projects/brolang/dist1728226716537574040 1
 81/mnt/WDmini/Documents/projects/brolang/node_modules/css-tree/cjs/syntax/index.cjs1728179968211396130 0
 78/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/transformer-js/src1728179962987405781 1
 83/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/regions/CG.js1728179970667391592 0
@@ -3177,6 +3179,7 @@
 82/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/utils/src/sourcemap.js1728179972179388798 0
 94/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/features/magnetometer.js1728179975367382908 0
 87/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/optimizer-svgo/node_modules1728179987239360974 1
+65/mnt/WDmini/Documents/projects/brolang/.github/workflows/main.yml1728230330939213672 0
 85/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/runtime-react-refresh/src1728179962347406964 1
 130/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/optimizer-svgo/node_modules/css-tree/lib/syntax/node/MediaQueryList.js1728179972331388517 0
 112/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/optimizer-svgo/node_modules/css-tree/data/patch.json1728179972955387365 0
@@ -3763,7 +3766,7 @@
 99/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/features/namevalue-storage.js1728179975611382457 0
 83/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/regions/ZM.js1728179976495380824 0
 100/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/optimizer-svgo/node_modules/mdn-data/api1728179964527402936 1
-49/mnt/WDmini/Documents/projects/brolang/brolang.js1728219343242626768 0
+49/mnt/WDmini/Documents/projects/brolang/brolang.js1728230331547212596 0
 94/mnt/WDmini/Documents/projects/brolang/node_modules/@lmdb/lmdb-linux-x64/node.abi93.glibc.node1728179968487395620 0
 84/mnt/WDmini/Documents/projects/brolang/node_modules/react-error-overlay/package.json1728179964463403054 0
 102/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/features/wasm-mutable-globals.js1728179976391381017 0
@@ -4474,7 +4477,7 @@
 60/mnt/WDmini/Documents/projects/brolang/node_modules/csso/cjs1728179966295399670 1
 95/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/features/link-icon-png.js1728179975283383063 0
 95/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/features/object-values.js1728179975775382154 0
-53/mnt/WDmini/Documents/projects/brolang/interpreter.js1728225085132436156 0
+53/mnt/WDmini/Documents/projects/brolang/interpreter.js1728232032704185207 0
 119/mnt/WDmini/Documents/projects/brolang/node_modules/@parcel/optimizer-htmlnano/node_modules/css-select/lib/general.d.ts1728179965311401488 0
 95/mnt/WDmini/Documents/projects/brolang/node_modules/caniuse-lite/data/features/sharedworkers.js1728179976147381467 0
 71/mnt/WDmini/Documents/projects/brolang/node_modules/semver/package.json1728179965735400704 0

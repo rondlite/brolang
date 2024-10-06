@@ -17,6 +17,10 @@ ace.define("ace/mode/brolang", [
                     regex: "\\b(?:yo|brofunc|bounce|spill|if|else|forEvery|squadGoals)\\b"
                 },
                 {
+                    token: "constant.language.escape",
+                    regex: /nocap/
+                },
+                {
                     token: "constant.language.boolean",
                     regex: /(?:dope|nope)\b/
                 },

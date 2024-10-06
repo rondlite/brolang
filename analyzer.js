@@ -1,6 +1,7 @@
 export class SemanticAnalyzer {
   constructor(ast) {
     this.ast = ast;
+    this.constants = {};
   }
 
   analyze() {
@@ -10,6 +11,8 @@ export class SemanticAnalyzer {
   _checkNode(node) {
     if (node.type === "Program") {
       node.children.forEach((child) => this._checkNode(child));
+    } else if (node.type === "ConstantDeclaration") {
+      this._defineConstant(node.value.identifier, node.value.expression);
     } else if (node.type === "Expression") {
       // Example check: ensure identifiers are defined
       if (!this._isDefined(node.value)) {
@@ -19,8 +22,17 @@ export class SemanticAnalyzer {
     }
   }
 
-  _isDefined(identifier) {
-    // Placeholder for checking if an identifier is defined
+  _defineConstant(identifier, expression) {
+    if (this.constants.hasOwnProperty(identifier)) {
+      throw new Error(`Constant already defined: ${identifier}`);
+    }
     return true;
+  }
+
+  _isDefined(identifier) {
+    return (
+      this.constants.hasOwnProperty(identifier) ||
+      this.variables.hasOwnProperty(identifier)
+    );
   }
 }

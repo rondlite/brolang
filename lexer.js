@@ -107,8 +107,8 @@ export class Lexer {
       "if",
       "else",
       "forEvery",
-      "squadGoals"
-      // Remove "dope" and "nope" from here since they are handled separately
+      "squadGoals",
+      "nocap"
     ];
     const type = keywords.includes(value) ? "KEYWORD" : "IDENTIFIER";
     return { type, value };

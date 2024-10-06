@@ -1,6 +1,7 @@
 export class Interpreter {
   constructor() {
     this.variables = {};
+    this.constants = {};
   }
 
   interpret(ast) {
@@ -26,6 +27,9 @@ export class Interpreter {
         break;
       case "ExpressionStatement":
         this._evaluate(node.value);
+        break;
+      case "ConstantDeclaration":
+        this._executeConstantDeclaration(node);
         break;
       case "IfStatement":
         this._executeIfStatement(node);
@@ -66,6 +70,16 @@ export class Interpreter {
     }
   }
 
+  _executeConstantDeclaration(node) {
+    const identifier = node.value.identifier;
+    const value = this._evaluate(node.value.expression);
+
+    if (this.constants.hasOwnProperty(identifier)) {
+      throw new Error(`Cannot reassign constant: ${identifier}`);
+    }
+
+    this.constants[identifier] = value; // Store the constant in a separate storage
+  }
   _executeForEachLoop(node) {
     const list = this.variables[node.value.list];
     for (const item of list) {
@@ -75,7 +89,9 @@ export class Interpreter {
   }
   _evaluateIdentifier(node) {
     const identifier = node.value;
-    if (this.variables.hasOwnProperty(identifier)) {
+    if (this.constants.hasOwnProperty(identifier)) {
+      return this.constants[identifier];
+    } else if (this.variables.hasOwnProperty(identifier)) {
       return this.variables[identifier];
     } else {
       throw new Error(`Undefined variable: ${identifier}`);

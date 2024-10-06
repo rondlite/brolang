@@ -150,7 +150,6 @@ export class Parser {
   _parseExpression() {
     return this._parseAdditionSubtraction();
   }
-
   _parsePrimary() {
     const token = this.tokens[this.position];
     switch (token.type) {
@@ -166,6 +165,9 @@ export class Parser {
       case "STRING":
         this.position++;
         return new ASTNode("Literal", token.value);
+      case "BOOLEAN":
+        this.position++;
+        return new ASTNode("Literal", token.value); // Handle BOOLEAN tokens
       default:
         throw new Error(`Unexpected token in expression: ${token.type}`);
     }

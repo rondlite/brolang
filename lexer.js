@@ -89,7 +89,16 @@ export class Lexer {
     while (/[a-zA-Z]/.test(this.input[this.position])) {
       this.position++;
     }
+
     let value = this.input.slice(start, this.position);
+
+    // Check specifically for boolean literals
+    if (value === "dope") {
+      return { type: "BOOLEAN", value: true };
+    } else if (value === "nope") {
+      return { type: "BOOLEAN", value: false };
+    }
+
     const keywords = [
       "yo",
       "brofunc",
@@ -98,9 +107,8 @@ export class Lexer {
       "if",
       "else",
       "forEvery",
-      "squadGoals",
-      "dope",
-      "nope"
+      "squadGoals"
+      // Remove "dope" and "nope" from here since they are handled separately
     ];
     const type = keywords.includes(value) ? "KEYWORD" : "IDENTIFIER";
     return { type, value };

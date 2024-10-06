@@ -53,8 +53,7 @@ export class Interpreter {
   _executePrintStatement(node) {
     const value = this._evaluate(node.value.expression);
     const currentID = document.getElementById("editorOutput");
-    let currentHTML = currentID.innerHTML;
-    currentID.innerHTML = currentHTML + value;
+    currentID.innerHTML = value;
     console.log(value);
   }
 
@@ -104,6 +103,9 @@ export class Interpreter {
   }
 
   _parseLiteral(value) {
+    if (typeof value === "boolean") {
+      return value;
+    }
     if (typeof value === "string" && !isNaN(value) && value.trim() !== "") {
       return Number(value);
     }

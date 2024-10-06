@@ -733,6 +733,15 @@ class Lexer {
         let start = this.position;
         while(/[a-zA-Z]/.test(this.input[this.position]))this.position++;
         let value = this.input.slice(start, this.position);
+        // Check specifically for boolean literals
+        if (value === "dope") return {
+            type: "BOOLEAN",
+            value: true
+        };
+        else if (value === "nope") return {
+            type: "BOOLEAN",
+            value: false
+        };
         const keywords = [
             "yo",
             "brofunc",
@@ -741,9 +750,7 @@ class Lexer {
             "if",
             "else",
             "forEvery",
-            "squadGoals",
-            "dope",
-            "nope"
+            "squadGoals"
         ];
         const type = keywords.includes(value) ? "KEYWORD" : "IDENTIFIER";
         return {
@@ -948,6 +955,9 @@ class Parser {
             case "STRING":
                 this.position++;
                 return new ASTNode("Literal", token.value);
+            case "BOOLEAN":
+                this.position++;
+                return new ASTNode("Literal", token.value); // Handle BOOLEAN tokens
             default:
                 throw new Error(`Unexpected token in expression: ${token.type}`);
         }
@@ -1079,8 +1089,7 @@ class Interpreter {
     _executePrintStatement(node) {
         const value = this._evaluate(node.value.expression);
         const currentID = document.getElementById("editorOutput");
-        let currentHTML = currentID.innerHTML;
-        currentID.innerHTML = currentHTML + value;
+        currentID.innerHTML = value;
         console.log(value);
     }
     _executeIfStatement(node) {
@@ -1118,6 +1127,7 @@ class Interpreter {
         }
     }
     _parseLiteral(value) {
+        if (typeof value === "boolean") return value;
         if (typeof value === "string" && !isNaN(value) && value.trim() !== "") return Number(value);
         return value;
     }

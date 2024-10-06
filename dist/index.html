@@ -984,7 +984,8 @@ class Interpreter {
     _executePrintStatement(node) {
         const value = this._evaluate(node.value.expression);
         const currentID = document.getElementById("editorOutput");
-        currentID.innerHTML = value;
+        const currentHTML = currentID.innerHTML;
+        currentID.innerHTML = currentHTML + value;
         console.log(value);
     }
     _executeIfStatement(node) {
@@ -1191,5 +1192,6 @@ class Lexer {
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fduHp","8d1Mn"], "8d1Mn", "parcelRequire94c2")
 
 </script>
+    <footer>No &copy; Ron van Etten 2024</footer>
   </body>
 </html>

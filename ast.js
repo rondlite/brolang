@@ -41,7 +41,7 @@ export class Parser {
     }
   }
   _parseIfStatement() {
-    this._consume("KEYWORD", "if"); // Consume 'if' keyword
+   
 
     this._consume("LPAREN"); // Consume '('
     const condition = this._parseExpression(); // Parse the condition expression

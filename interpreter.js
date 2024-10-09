@@ -25,6 +25,8 @@ export class Interpreter {
       case "PrintStatement":
         this._executePrintStatement(node);
         break;
+      case "ComparisonExpression":
+        return this._evaluateComparison(node);
       case "ExpressionStatement":
         this._evaluate(node.value);
         break;
@@ -99,6 +101,25 @@ export class Interpreter {
     }
   }
 
+  _evaluateComparison(node) {
+  const left = this._evaluate(node.value.left);
+  const right = this._evaluate(node.value.right);
+  
+  switch (node.value.operator) {
+    case ">":
+      return left > right;
+    case "<":
+      return left < right;
+    case "==":
+    case "===":
+      return left === right;
+    // Add other comparison operators as needed
+    default:
+      throw new Error(`Unknown comparison operator: ${node.value.operator}`);
+  }
+  }
+
+  
   _executeFunctionDeclaration(node) {
     // Store function in variables for later invocation
     this.variables[node.value.name] = node;

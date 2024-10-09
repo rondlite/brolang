@@ -154,9 +154,34 @@ export class Parser {
     this._consume("SEMICOLON");
     return new ASTNode("ExpressionStatement", expressionNode);
   }
-  _parseExpression() {
-    return this._parseAdditionSubtraction();
+
+_parseExpression() {
+  return this._parseComparison();  // Start with comparison, which can then fall back to addition/subtraction
+}
+
+_parseComparison() {
+  let left = this._parseAdditionSubtraction();
+  
+  while (
+    this._check("GREATER_THAN") || 
+    this._check("LESS_THAN") || 
+    this._check("EQUALS") // You might need to add more comparison operators
+  ) {
+    const operator = this.tokens[this.position].value;
+    this.position++;
+    const right = this._parseAdditionSubtraction();
+    left = new ASTNode("ComparisonExpression", {
+      operator: operator,
+      left: left,
+      right: right
+    });
   }
+  
+  return left;
+}
+
+
+  
   _parsePrimary() {
     const token = this.tokens[this.position];
     switch (token.type) {

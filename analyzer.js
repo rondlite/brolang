@@ -41,6 +41,9 @@ export class SemanticAnalyzer {
       case "ConcurrencyBlock":
         node.value.children.forEach(child => this._analyzeNode(child));
         break;
+      case "Literal": // Add this case
+        // Literals do not need further analysis
+        break;
       // Add other cases for different node types
       default:
         throw new Error(`Unknown node type in analysis: ${node.type}`);

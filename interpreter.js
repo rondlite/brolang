@@ -5,7 +5,7 @@ export class Interpreter {
   }
 
   interpret(ast) {
-    this._executeBlock(ast.children);
+    this._executeBlock(ast.value.children);
   }
 
   _executeBlock(statements) {
@@ -17,7 +17,7 @@ export class Interpreter {
   _execute(node) {
     switch (node.type) {
       case "Program":
-        this._executeBlock(node.children);
+        this._executeBlock(node.value.children);
         break;
       case "VariableDeclaration":
         this._executeVariableDeclaration(node);
@@ -28,7 +28,7 @@ export class Interpreter {
       case "ComparisonExpression":
         return this._evaluateComparison(node);
       case "ExpressionStatement":
-        this._evaluate(node.value);
+        this._evaluate(node.value.expression);
         break;
       case "ConstantDeclaration":
         this._executeConstantDeclaration(node);
@@ -58,18 +58,15 @@ export class Interpreter {
 
   _executePrintStatement(node) {
     const value = this._evaluate(node.value.expression);
-    const currentID = document.getElementById("editorOutput");
-    const currentHTML = currentID.innerHTML;
-    currentID.innerHTML = currentHTML + value;
     console.log(value);
   }
 
   _executeIfStatement(node) {
     const condition = this._evaluate(node.value.condition);
     if (condition) {
-      this._executeBlock(node.value.thenBranch.children);
+      this._executeBlock(node.value.thenBranch.value.children);
     } else if (node.value.elseBranch) {
-      this._executeBlock(node.value.elseBranch.children);
+      this._executeBlock(node.value.elseBranch.value.children);
     }
   }
 
@@ -88,7 +85,7 @@ export class Interpreter {
     const list = this.variables[node.value.list];
     for (const item of list) {
       this.variables[node.value.element] = item;
-      this._executeBlock(node.value.body.children);
+      this._executeBlock(node.value.body.value.children);
     }
   }
 
@@ -108,19 +105,17 @@ export class Interpreter {
     const right = this._evaluate(node.value.right);
 
     switch (node.value.operator) {
-      case ">":
+      case "GREATER_THAN":
         return left > right;
-      case "<":
+      case "LESS_THAN":
         return left < right;
-      case "==":
-      case "===":
+      case "EQUALS":
         return left === right;
-      case "!=":
-      case "!==":
+      case "NOT_EQUALS":
         return left !== right;
-      case ">=":
+      case "GREATER_THAN_EQUAL":
         return left >= right;
-      case "<=":
+      case "LESS_THAN_EQUAL":
         return left <= right;
       default:
         throw new Error(`Unknown comparison operator: ${node.value.operator}`);
@@ -143,7 +138,7 @@ export class Interpreter {
         return this._evaluateBinaryExpression(node);
       case "Identifier":
         return this._evaluateIdentifier(node);
-      case "ComparisonExpression": // Add this case
+      case "ComparisonExpression":
         return this._evaluateComparison(node);
       default:
         throw new Error(`Unknown node type in evaluation: ${node.type}`);

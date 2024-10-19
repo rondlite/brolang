@@ -2,7 +2,6 @@ class ASTNode {
   constructor(type, value) {
     this.type = type;
     this.value = value;
-    this.children = [];
   }
 }
 
@@ -13,31 +12,22 @@ export class Parser {
   }
 
   parse() {
-    const root = new ASTNode("Program", null);
-    while (this.position < this.tokens.length) {
-      root.children.push(this._parseStatement());
+    const statements = [];
+    while (!this._isAtEnd()) {
+      statements.push(this._parseStatement());
     }
-    return root;
+    return new ASTNode("Program", { children: statements });
   }
 
   _parseStatement() {
-    const token = this.tokens[this.position];
-    console.log(
-      `Parsing statement at position ${this.position}: ${
-        token ? token.type : "EOF"
-      }`
-    );
-
-    switch (token.type) {
-      case "KEYWORD":
-        if (token.value === "nocap") {
-          return this._parseConstantDeclaration();
-        }
-        return this._parseKeywordStatement();
-      case "IDENTIFIER":
-        return this._parseExpressionStatement();
-      default:
-        throw new Error(`Unexpected token: ${token.type}`);
+    if (this._match("KEYWORD", "yo")) {
+      return this._parseVariableDeclaration();
+    } else if (this._match("KEYWORD", "spill")) {
+      return this._parsePrintStatement();
+    } else if (this._match("KEYWORD", "if")) {
+      return this._parseIfStatement();
+    } else {
+      return this._parseExpressionStatement();
     }
   }
 
@@ -63,220 +53,86 @@ export class Parser {
   _parseBlock() {
     this._consume("LBRACE"); // Consume '{'
     const statements = [];
-    while (!this._check("RBRACE")) {
+    while (!this._check("RBRACE") && !this._isAtEnd()) {
       statements.push(this._parseStatement());
     }
     this._consume("RBRACE"); // Consume '}'
-    return new ASTNode("Block", statements);
-  }
-
-  _parseKeywordStatement() {
-    const token = this.tokens[this.position++];
-    let statementNode;
-
-    switch (token.value) {
-      case "yo":
-        statementNode = this._parseVariableDeclaration();
-        break;
-      case "brofunc":
-        statementNode = this._parseFunctionDeclaration();
-        break;
-      case "nocap":
-        statementNode = this._parseConstantDeclaration();
-        break;
-      case "spill":
-        statementNode = this._parsePrintStatement();
-        break;
-      case "if":
-        statementNode = this._parseIfStatement();
-        break;
-      case "forEvery":
-        statementNode = this._parseForEachLoop();
-        break;
-      case "squadGoals":
-        statementNode = this._parseConcurrencyBlock();
-        break;
-      default:
-        throw new Error(`Unexpected keyword: ${token.value}`);
-    }
-
-    this._consume("SEMICOLON");
-    return statementNode;
+    return new ASTNode("Block", { children: statements });
   }
 
   _parseVariableDeclaration() {
-    const identifierToken = this.tokens[this.position++];
+    this._consume("KEYWORD", "yo");
+    const identifier = this._consume("IDENTIFIER").value;
     this._consume("EQUALS");
-    const expressionNode = this._parseExpression();
-    return new ASTNode("VariableDeclaration", {
-      identifier: identifierToken.value,
-      expression: expressionNode
-    });
-  }
-
-  _parseFunctionDeclaration() {
-    const nameToken = this.tokens[this.position++];
-    const params = this._parseParameters();
-    const body = this._parseBlock();
-    return new ASTNode("FunctionDeclaration", {
-      name: nameToken.value,
-      parameters: params,
-      body: body
-    });
+    const expression = this._parseExpression();
+    this._consume("SEMICOLON");
+    return new ASTNode("VariableDeclaration", { identifier, expression });
   }
 
   _parsePrintStatement() {
-    const expressionNode = this._parseExpression();
-    if (!expressionNode) {
-      throw new Error("Failed to parse expression for spill statement");
-    }
-    return new ASTNode("PrintStatement", { expression: expressionNode });
-  }
-
-  _parseForEachLoop() {
-    const elementToken = this.tokens[this.position++];
-    this._consume("KEYWORD", "in");
-    const listToken = this.tokens[this.position++];
-    const body = this._parseBlock();
-    return new ASTNode("ForEachLoop", {
-      element: elementToken.value,
-      list: listToken.value,
-      body: body
-    });
-  }
-
-  _parseConcurrencyBlock() {
-    const body = this._parseBlock();
-    return new ASTNode("ConcurrencyBlock", body);
+    this._consume("KEYWORD", "spill");
+    const expression = this._parseExpression();
+    this._consume("SEMICOLON");
+    return new ASTNode("PrintStatement", { expression });
   }
 
   _parseExpressionStatement() {
-    const expressionNode = this._parseExpression();
+    const expression = this._parseExpression();
     this._consume("SEMICOLON");
-    return new ASTNode("ExpressionStatement", expressionNode);
+    return new ASTNode("ExpressionStatement", { expression });
   }
 
   _parseExpression() {
-    return this._parseComparison();  // Start with comparison, which can then fall back to addition/subtraction
+    return this._parseComparison();
   }
 
   _parseComparison() {
-    let left = this._parseAdditionSubtraction();
-    
-    while (
-      this._check("GREATER_THAN") || 
-      this._check("LESS_THAN") || 
-      this._check("EQUALS") // You might need to add more comparison operators
-    ) {
-      const operator = this.tokens[this.position].value;
-      this.position++;
-      const right = this._parseAdditionSubtraction();
-      left = new ASTNode("ComparisonExpression", {
-        operator: operator,
-        left: left,
-        right: right
-      });
+    let left = this._parsePrimary();
+    while (this._match("GREATER_THAN") || this._match("LESS_THAN") || this._match("EQUALS") || this._match("NOT_EQUALS") || this._match("GREATER_THAN_EQUAL") || this._match("LESS_THAN_EQUAL")) {
+      const operator = this.tokens[this.position - 1].type;
+      const right = this._parsePrimary();
+      left = new ASTNode("ComparisonExpression", { left, operator, right });
     }
-    
     return left;
   }
 
   _parsePrimary() {
+    if (this._match("NUMBER")) {
+      return new ASTNode("Literal", { value: Number(this.tokens[this.position - 1].value) });
+    } else if (this._match("STRING")) {
+      return new ASTNode("Literal", { value: this.tokens[this.position - 1].value });
+    } else if (this._match("IDENTIFIER")) {
+      return new ASTNode("Identifier", { value: this.tokens[this.position - 1].value });
+    } else {
+      throw new Error(`Unexpected token: ${this.tokens[this.position].type}`);
+    }
+  }
+
+  _consume(type, value) {
     const token = this.tokens[this.position];
-    switch (token.type) {
-      case "LPAREN":
-        this.position++;
-        const expression = this._parseExpression();
-        this._consume("RPAREN");
-        return expression;
-      case "IDENTIFIER":
-        this.position++;
-        return new ASTNode("Identifier", token.value);
-      case "NUMBER":
-      case "STRING":
-        this.position++;
-        return new ASTNode("Literal", token.value);
-      case "BOOLEAN":
-        this.position++;
-        return new ASTNode("Literal", token.value); // Handle BOOLEAN tokens
-      default:
-        throw new Error(`Unexpected token in expression: ${token.type}`);
+    if (token.type === type && (value === undefined || token.value === value)) {
+      this.position++;
+      return token;
+    } else {
+      throw new Error(`Expected token type ${type} with value ${value}, but got ${token.type} with value ${token.value}`);
     }
-  }
-
-  _parseConstantDeclaration() {
-    this._consume("KEYWORD", "nocap");
-    this._consume("KEYWORD", "yo"); // Assuming 'nocap yo' is used for constants
-    const identifierToken = this.tokens[this.position++];
-    this._consume("EQUALS");
-    const expression = this._parseExpression();
-    this._consume("SEMICOLON");
-
-    return new ASTNode("ConstantDeclaration", {
-      identifier: identifierToken.value,
-      expression: expression
-    });
-  }
-
-  _parseAdditionSubtraction() {
-    let left = this._parsePrimary();
-
-    while (this._match("PLUS") || this._match("MINUS")) {
-      const operatorToken = this.tokens[this.position++];
-      const right = this._parsePrimary();
-      left = new ASTNode("BinaryExpression", {
-        operator: operatorToken.value,
-        left: left,
-        right: right
-      });
-    }
-
-    return left;
-  }
-
-  _parseParameters() {
-    const params = [];
-    this._consume("LPAREN");
-    while (!this._check("RPAREN")) {
-      const paramToken = this.tokens[this.position++];
-      params.push(paramToken.value);
-      if (!this._check("RPAREN")) {
-        this._consume("COMMA");
-      }
-    }
-    this._consume("RPAREN");
-    return params;
-  }
-
-  _consume(expectedType, expectedValue = null) {
-    if (this.position >= this.tokens.length) {
-      throw new Error(
-        `Unexpected end of input, expected token type ${expectedType}`
-      );
-    }
-
-    const token = this.tokens[this.position];
-    if (
-      token.type !== expectedType ||
-      (expectedValue !== null && token.value !== expectedValue)
-    ) {
-      throw new Error(
-        `Expected token type ${expectedType} but found ${token.type}`
-      );
-    }
-    this.position++;
-  }
-
-  _check(type) {
-    if (this.position >= this.tokens.length) return false;
-    return this.tokens[this.position].type === type;
   }
 
   _match(type, value) {
-    if (this._check(type) && this.tokens[this.position].value === value) {
+    const token = this.tokens[this.position];
+    if (token.type === type && (value === undefined || token.value === value)) {
       this.position++;
       return true;
     }
     return false;
+  }
+
+  _check(type) {
+    if (this._isAtEnd()) return false;
+    return this.tokens[this.position].type === type;
+  }
+
+  _isAtEnd() {
+    return this.position >= this.tokens.length;
   }
 }

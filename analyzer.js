@@ -44,7 +44,7 @@ export class SemanticAnalyzer {
       case "Literal":
         // Literals do not need further analysis
         break;
-      case "Identifier": // Add this case
+      case "Identifier":
         // Identifiers do not need further analysis
         break;
       // Add other cases for different node types

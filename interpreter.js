@@ -64,9 +64,9 @@ export class Interpreter {
   _executeIfStatement(node) {
     const condition = this._evaluate(node.value.condition);
     if (condition) {
-      this._executeBlock(node.value.thenBranch.value.children);
+      this._executeBlock(node.value.thenBranch.children);
     } else if (node.value.elseBranch) {
-      this._executeBlock(node.value.elseBranch.value.children);
+      this._executeBlock(node.value.elseBranch.children);
     }
   }
 
@@ -85,7 +85,7 @@ export class Interpreter {
     const list = this.variables[node.value.list];
     for (const item of list) {
       this.variables[node.value.element] = item;
-      this._executeBlock(node.value.body.value.children);
+      this._executeBlock(node.value.body.children);
     }
   }
 

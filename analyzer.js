@@ -1,38 +1,24 @@
 export class SemanticAnalyzer {
   constructor(ast) {
     this.ast = ast;
-    this.constants = {};
   }
 
   analyze() {
-    this._checkNode(this.ast);
+    this._analyzeNode(this.ast);
   }
 
-  _checkNode(node) {
-    if (node.type === "Program") {
-      node.children.forEach((child) => this._checkNode(child));
-    } else if (node.type === "ConstantDeclaration") {
-      this._defineConstant(node.value.identifier, node.value.expression);
-    } else if (node.type === "Expression") {
-      // Example check: ensure identifiers are defined
-      if (!this._isDefined(node.value)) {
-        throw new Error(`Undefined identifier: ${node.value}`);
-      }
-      node.children.forEach((child) => this._checkNode(child));
+  _analyzeNode(node) {
+    switch (node.type) {
+      case "Program":
+        node.children.forEach(child => this._analyzeNode(child));
+        break;
+      case "ComparisonExpression":
+        this._analyzeNode(node.value.left);
+        this._analyzeNode(node.value.right);
+        break;
+      // Add other cases for different node types
+      default:
+        throw new Error(`Unknown node type in analysis: ${node.type}`);
     }
-  }
-
-  _defineConstant(identifier, expression) {
-    if (this.constants.hasOwnProperty(identifier)) {
-      throw new Error(`Constant already defined: ${identifier}`);
-    }
-    return true;
-  }
-
-  _isDefined(identifier) {
-    return (
-      this.constants.hasOwnProperty(identifier) ||
-      this.variables.hasOwnProperty(identifier)
-    );
   }
 }

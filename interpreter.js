@@ -83,6 +83,7 @@ export class Interpreter {
 
     this.constants[identifier] = value; // Store the constant in a separate storage
   }
+
   _executeForEachLoop(node) {
     const list = this.variables[node.value.list];
     for (const item of list) {
@@ -90,6 +91,7 @@ export class Interpreter {
       this._executeBlock(node.value.body.children);
     }
   }
+
   _evaluateIdentifier(node) {
     const identifier = node.value;
     if (this.constants.hasOwnProperty(identifier)) {
@@ -102,28 +104,34 @@ export class Interpreter {
   }
 
   _evaluateComparison(node) {
-  const left = this._evaluate(node.value.left);
-  const right = this._evaluate(node.value.right);
-  
-  switch (node.value.operator) {
-    case ">":
-      return left > right;
-    case "<":
-      return left < right;
-    case "==":
-    case "===":
-      return left === right;
-    // Add other comparison operators as needed
-    default:
-      throw new Error(`Unknown comparison operator: ${node.value.operator}`);
-  }
+    const left = this._evaluate(node.value.left);
+    const right = this._evaluate(node.value.right);
+
+    switch (node.value.operator) {
+      case ">":
+        return left > right;
+      case "<":
+        return left < right;
+      case "==":
+      case "===":
+        return left === right;
+      case "!=":
+      case "!==":
+        return left !== right;
+      case ">=":
+        return left >= right;
+      case "<=":
+        return left <= right;
+      default:
+        throw new Error(`Unknown comparison operator: ${node.value.operator}`);
+    }
   }
 
-  
   _executeFunctionDeclaration(node) {
     // Store function in variables for later invocation
     this.variables[node.value.name] = node;
   }
+
   _evaluate(node) {
     if (!node) {
       throw new Error("Attempted to evaluate a null or undefined node");
@@ -135,6 +143,8 @@ export class Interpreter {
         return this._evaluateBinaryExpression(node);
       case "Identifier":
         return this._evaluateIdentifier(node);
+      case "ComparisonExpression": // Add this case
+        return this._evaluateComparison(node);
       default:
         throw new Error(`Unknown node type in evaluation: ${node.type}`);
     }

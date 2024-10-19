@@ -40,9 +40,8 @@ export class Parser {
         throw new Error(`Unexpected token: ${token.type}`);
     }
   }
-  _parseIfStatement() {
-   
 
+  _parseIfStatement() {
     this._consume("LPAREN"); // Consume '('
     const condition = this._parseExpression(); // Parse the condition expression
     this._consume("RPAREN"); // Consume ')'
@@ -84,6 +83,7 @@ export class Parser {
         break;
       case "nocap":
         statementNode = this._parseConstantDeclaration();
+        break;
       case "spill":
         statementNode = this._parsePrintStatement();
         break;
@@ -124,6 +124,7 @@ export class Parser {
       body: body
     });
   }
+
   _parsePrintStatement() {
     const expressionNode = this._parseExpression();
     if (!expressionNode) {
@@ -155,33 +156,31 @@ export class Parser {
     return new ASTNode("ExpressionStatement", expressionNode);
   }
 
-_parseExpression() {
-  return this._parseComparison();  // Start with comparison, which can then fall back to addition/subtraction
-}
-
-_parseComparison() {
-  let left = this._parseAdditionSubtraction();
-  
-  while (
-    this._check("GREATER_THAN") || 
-    this._check("LESS_THAN") || 
-    this._check("EQUALS") // You might need to add more comparison operators
-  ) {
-    const operator = this.tokens[this.position].value;
-    this.position++;
-    const right = this._parseAdditionSubtraction();
-    left = new ASTNode("ComparisonExpression", {
-      operator: operator,
-      left: left,
-      right: right
-    });
+  _parseExpression() {
+    return this._parseComparison();  // Start with comparison, which can then fall back to addition/subtraction
   }
-  
-  return left;
-}
 
+  _parseComparison() {
+    let left = this._parseAdditionSubtraction();
+    
+    while (
+      this._check("GREATER_THAN") || 
+      this._check("LESS_THAN") || 
+      this._check("EQUALS") // You might need to add more comparison operators
+    ) {
+      const operator = this.tokens[this.position].value;
+      this.position++;
+      const right = this._parseAdditionSubtraction();
+      left = new ASTNode("ComparisonExpression", {
+        operator: operator,
+        left: left,
+        right: right
+      });
+    }
+    
+    return left;
+  }
 
-  
   _parsePrimary() {
     const token = this.tokens[this.position];
     switch (token.type) {
@@ -249,15 +248,6 @@ _parseComparison() {
     return params;
   }
 
-  _parseBlock() {
-    this._consume("LBRACE");
-    const statements = [];
-    while (!this._check("RBRACE")) {
-      statements.push(this._parseStatement());
-    }
-    this._consume("RBRACE");
-    return new ASTNode("Block", statements);
-  }
   _consume(expectedType, expectedValue = null) {
     if (this.position >= this.tokens.length) {
       throw new Error(

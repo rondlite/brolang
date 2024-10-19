@@ -39,7 +39,6 @@ export class Parser {
 
     let elseBranch = null;
     if (this._match("KEYWORD", "else")) {
-      this.position++; // Move past 'else'
       elseBranch = this._parseBlock(); // Parse the 'else' block if present
     }
 
